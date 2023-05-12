@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/12 20:03:02 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/05/12 20:56:27 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static char	*cmd_build(char *str)
 	new[2] = 'i';
 	new[3] = 'n';
 	new[4] = '/';
-	while (j < ft_strlen(str) - 1)
+	while (j < ft_strlen(str))
 		new[i++] = str[j++];
 	return (new);
 }
@@ -73,6 +73,7 @@ int	main(int ac, char **av, char **env)
 				ft_printf("Error : Problem with second dup programme in parent.\n");
 			close(outfile);
 			cmd = cmd_build(ft_split(av[3], ' ')[0]);
+			/* ft_printf("cmd = %s\n", cmd); */
 			if (execve(cmd, ft_split(av[3], ' '), env) == -1)
 				ft_printf("Error : Wrong parent execution.\n");
 		}
