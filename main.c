@@ -6,18 +6,41 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/10 22:28:43 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/05/12 20:03:02 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+static char	*cmd_build(char *str)
+{
+	char	*new;
+	size_t	i;
+	size_t	j;
+
+	if (str[0] == '/' && str[1] == 'b' && str[2] == 'i' && str[3] == 'n'
+			&& str[4] == '/')
+		return (str);
+	new = (char *) malloc(sizeof(char) * (5 + ft_strlen(str)));
+	i = 5;
+	j = 0;
+	new[0] = '/';
+	new[1] = 'b';
+	new[2] = 'i';
+	new[3] = 'n';
+	new[4] = '/';
+	while (j < ft_strlen(str) - 1)
+		new[i++] = str[j++];
+	return (new);
+}
+
 int	main(int ac, char **av, char **env)
 {
-	int	id;
-	int	outin[2];
-	int	infile;
-	int	outfile;
+	int		id;
+	int		outin[2];
+	int		infile;
+	int		outfile;
+	char	*cmd;
 
 	if (pipe(outin) == -1)
 		ft_printf("Error : There is a probleme with the pipe system.\n");
@@ -33,7 +56,8 @@ int	main(int ac, char **av, char **env)
 			dup2(infile, STDIN_FILENO);
 			dup2(outin[1], STDOUT_FILENO);
 			close(infile);
-			if (execve(ft_split(av[2], ' ')[0], ft_split(av[2], ' '), env) == -1)
+			cmd = cmd_build(ft_split(av[2], ' ')[0]);
+			if (execve(cmd, ft_split(av[2], ' '), env) == -1)
 				ft_printf("Error : Wrong child execution.\n");
 		}
 		else if (id > 0) // parent
@@ -48,7 +72,8 @@ int	main(int ac, char **av, char **env)
 			if (dup2(outfile, STDOUT_FILENO) == -1)
 				ft_printf("Error : Problem with second dup programme in parent.\n");
 			close(outfile);
-			if (execve(ft_split(av[3], ' ')[0], ft_split(av[3], ' '), env) == -1)
+			cmd = cmd_build(ft_split(av[3], ' ')[0]);
+			if (execve(cmd, ft_split(av[3], ' '), env) == -1)
 				ft_printf("Error : Wrong parent execution.\n");
 		}
 		else
