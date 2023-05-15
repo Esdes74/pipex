@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/12 20:56:27 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/05/13 19:50:37 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ int	main(int ac, char **av, char **env)
 	int		infile;
 	int		outfile;
 	char	*cmd;
+	char	**test;
+	(void)	env;
+	/* int	i = 0; */
 
 	if (pipe(outin) == -1)
 		ft_printf("Error : There is a probleme with the pipe system.\n");
@@ -57,8 +60,14 @@ int	main(int ac, char **av, char **env)
 			dup2(outin[1], STDOUT_FILENO);
 			close(infile);
 			cmd = cmd_build(ft_split(av[2], ' ')[0]);
-			if (execve(cmd, ft_split(av[2], ' '), env) == -1)
+			test = ft_split(av[2], ' ');
+			/* while (test[i][0] != '\0') */
+			/* 	i++; */
+			/* free(test[i]); */
+			/* test[i] = NULL; */
+			if (execve(cmd, test, env) == -1)
 				ft_printf("Error : Wrong child execution.\n");
+			free(cmd);
 		}
 		else if (id > 0) // parent
 		{
@@ -73,9 +82,16 @@ int	main(int ac, char **av, char **env)
 				ft_printf("Error : Problem with second dup programme in parent.\n");
 			close(outfile);
 			cmd = cmd_build(ft_split(av[3], ' ')[0]);
+			test = ft_split(av[3], ' ');
+			/* i = 0; */
+			/* while (test[i] != NULL) */
+			/* 	i++; */
+			/* free(test[i]); */
+			/* test[i] = NULL; */
 			/* ft_printf("cmd = %s\n", cmd); */
-			if (execve(cmd, ft_split(av[3], ' '), env) == -1)
+			if (execve(cmd, test, env) == -1)
 				ft_printf("Error : Wrong parent execution.\n");
+			free(cmd);
 		}
 		else
 			ft_printf("Error : There is a problem with the fork system.\n");
