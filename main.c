@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/13 19:50:37 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/05/20 08:28:29 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@ static char	*cmd_build(char *str)
 	if (str[0] == '/' && str[1] == 'b' && str[2] == 'i' && str[3] == 'n'
 			&& str[4] == '/')
 		return (str);
-	new = (char *) malloc(sizeof(char) * (5 + ft_strlen(str)));
+	new = NULL;
+	ft_printf("size = %d\n", 5 + ft_strlen(str));
+	new = malloc(sizeof(char) * (5 + ft_strlen(str)));
+	if (new == NULL)
+		return (NULL);
 	i = 5;
 	j = 0;
 	new[0] = '/';
@@ -34,6 +38,16 @@ static char	*cmd_build(char *str)
 	return (new);
 }
 
+static void	anihilation(char **splitted)
+{
+	int	i;
+
+	i = 0;
+	while (splitted[i] != NULL)
+		free(splitted[i++]);
+	free(splitted);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	int		id;
@@ -41,14 +55,13 @@ int	main(int ac, char **av, char **env)
 	int		infile;
 	int		outfile;
 	char	*cmd;
-	char	**test;
-	(void)	env;
+	char	**splitted;
 	/* int	i = 0; */
 
 	if (pipe(outin) == -1)
 		ft_printf("Error : There is a probleme with the pipe system.\n");
 	id = fork();
-	if (ac == 5)
+	if (ac == 5 && env != NULL)
 	{
 		if (id == 0) // child
 		{
@@ -56,18 +69,25 @@ int	main(int ac, char **av, char **env)
 			infile = open(av[1], O_RDONLY);
 			if (infile == -1)
 				ft_printf("Error : Wrong opening infile.\n");
-			dup2(infile, STDIN_FILENO);
-			dup2(outin[1], STDOUT_FILENO);
+			if (dup2(infile, STDIN_FILENO) == -1)
+				ft_printf("Error : Probleme with first dup programm in child\n");
+			if (dup2(outin[1], STDOUT_FILENO) == -1)
+				ft_printf("Error : Probleme with second dup programm in child\n");
 			close(infile);
-			cmd = cmd_build(ft_split(av[2], ' ')[0]);
-			test = ft_split(av[2], ' ');
+			splitted = ft_split(av[2], ' ');
+			if (splitted == NULL)
+				return (1);
+			cmd = cmd_build(splitted[0]);
+			if (cmd == NULL)
+				return (free(splitted), 1);
 			/* while (test[i][0] != '\0') */
 			/* 	i++; */
 			/* free(test[i]); */
 			/* test[i] = NULL; */
-			if (execve(cmd, test, env) == -1)
-				ft_printf("Error : Wrong child execution.\n");
+			/* if (execve(cmd, splitted, env) == -1) */
+			/* 	ft_printf("Error : Wrong child execution.\n"); */
 			free(cmd);
+			anihilation(splitted);
 		}
 		else if (id > 0) // parent
 		{
@@ -81,22 +101,28 @@ int	main(int ac, char **av, char **env)
 			if (dup2(outfile, STDOUT_FILENO) == -1)
 				ft_printf("Error : Problem with second dup programme in parent.\n");
 			close(outfile);
-			cmd = cmd_build(ft_split(av[3], ' ')[0]);
-			test = ft_split(av[3], ' ');
+			splitted = ft_split(av[3], ' ');
+			if (splitted == NULL)
+				return (1);
+			cmd = cmd_build(splitted[0]);
+			if (cmd == NULL)
+				return (free(splitted), 1);
 			/* i = 0; */
 			/* while (test[i] != NULL) */
 			/* 	i++; */
 			/* free(test[i]); */
 			/* test[i] = NULL; */
 			/* ft_printf("cmd = %s\n", cmd); */
-			if (execve(cmd, test, env) == -1)
-				ft_printf("Error : Wrong parent execution.\n");
+			/* if (execve(cmd, splitted, env) == -1) */
+			/* 	ft_printf("Error : Wrong parent execution.\n"); */
 			free(cmd);
+			anihilation(splitted);
 		}
 		else
 			ft_printf("Error : There is a problem with the fork system.\n");
 	}
 	else
-		ft_printf("Error : You don't have enought parameters.\n");
+		ft_printf("Error : You don't have enought parameters.\n Or the \
+environnement is NULL\n");
 	return (0);
 }
