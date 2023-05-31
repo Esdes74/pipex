@@ -6,24 +6,26 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/20 08:28:29 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/05/31 15:47:58 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h>
 
 static char	*cmd_build(char *str)
 {
 	char	*new;
 	size_t	i;
 	size_t	j;
+	size_t	size;
 
 	if (str[0] == '/' && str[1] == 'b' && str[2] == 'i' && str[3] == 'n'
 			&& str[4] == '/')
 		return (str);
 	new = NULL;
-	ft_printf("size = %d\n", 5 + ft_strlen(str));
-	new = malloc(sizeof(char) * (5 + ft_strlen(str)));
+	size = 6 + ft_strlen(str);
+	new = (char *) malloc(sizeof(char) * size);
 	if (new == NULL)
 		return (NULL);
 	i = 5;
@@ -35,6 +37,8 @@ static char	*cmd_build(char *str)
 	new[4] = '/';
 	while (j < ft_strlen(str))
 		new[i++] = str[j++];
+	new[i] = '\0';
+	/* ft_printf("new = %s, i = %d\n", new, i); */
 	return (new);
 }
 
@@ -84,8 +88,9 @@ int	main(int ac, char **av, char **env)
 			/* 	i++; */
 			/* free(test[i]); */
 			/* test[i] = NULL; */
-			/* if (execve(cmd, splitted, env) == -1) */
-			/* 	ft_printf("Error : Wrong child execution.\n"); */
+			if (execve(cmd, splitted, env) == -1)
+				ft_printf("Error : Wrong child execution.\n");
+			perror("errno");
 			free(cmd);
 			anihilation(splitted);
 		}
@@ -113,8 +118,8 @@ int	main(int ac, char **av, char **env)
 			/* free(test[i]); */
 			/* test[i] = NULL; */
 			/* ft_printf("cmd = %s\n", cmd); */
-			/* if (execve(cmd, splitted, env) == -1) */
-			/* 	ft_printf("Error : Wrong parent execution.\n"); */
+			if (execve(cmd, splitted, env) == -1)
+				ft_printf("Error : Wrong parent execution.\n");
 			free(cmd);
 			anihilation(splitted);
 		}
