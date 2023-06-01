@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/05/31 15:47:58 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/01 16:47:00 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,9 @@ int	main(int ac, char **av, char **env)
 
 	if (pipe(outin) == -1)
 		ft_printf("Error : There is a probleme with the pipe system.\n");
-	id = fork();
 	if (ac == 5 && env != NULL)
 	{
+		id = fork();
 		if (id == 0) // child
 		{
 			close(outin[0]);
@@ -89,8 +89,8 @@ int	main(int ac, char **av, char **env)
 			/* free(test[i]); */
 			/* test[i] = NULL; */
 			if (execve(cmd, splitted, env) == -1)
-				ft_printf("Error : Wrong child execution.\n");
-			perror("errno");
+				perror("Child : command not found");
+				/* ft_printf("Error : Wrong child execution.\n"); */
 			free(cmd);
 			anihilation(splitted);
 		}
@@ -119,7 +119,8 @@ int	main(int ac, char **av, char **env)
 			/* test[i] = NULL; */
 			/* ft_printf("cmd = %s\n", cmd); */
 			if (execve(cmd, splitted, env) == -1)
-				ft_printf("Error : Wrong parent execution.\n");
+				perror("Parent : command not found");
+				/* ft_printf("Error : Wrong parent execution.\n"); */
 			free(cmd);
 			anihilation(splitted);
 		}

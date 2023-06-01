@@ -1,1 +1,8 @@
-6
+total 56
+drwxr-xr-x 4 beber beber  4096  1 juin  15:03 libft
+-rw-r--r-- 1 beber beber  3885  1 juin  15:36 main.c
+-rw-r--r-- 1 beber beber  1900  4 mai   16:31 Makefile
+-rw-r--r-- 1 beber beber     0  1 juin  15:43 outfile
+-rwxr-xr-x 1 beber beber 33072  1 juin  15:37 pipex
+-rw-r--r-- 1 beber beber  1004 12 mai   20:03 pipex.h
+-rw-r--r-- 1 beber beber    19  1 juin  11:59 test
