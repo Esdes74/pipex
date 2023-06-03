@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/02 10:30:51 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/03 15:06:16 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@ static char	*cmd_build(char *str)
 	size_t	j;
 	size_t	size;
 
-	if (str[0] == '/' && str[1] == 'b' && str[2] == 'i' && str[3] == 'n'
-			&& str[4] == '/')
+	/* if (str[0] == '/' && str[1] == 'b' && str[2] == 'i' && str[3] == 'n' */
+	/* 		&& str[4] == '/') */
+	if (ft_in('/', str) == 1)
 		return (str);
 	new = NULL;
 	size = 6 + ft_strlen(str);
@@ -62,10 +63,10 @@ int	main(int ac, char **av, char *environ[])
 	char	**splitted;
 	/* int	i = 0; */
 
-	if (pipe(outin) == -1)
-		ft_printf("Error : There is a probleme with the pipe system.\n");
 	if (ac == 5 && environ != NULL)
 	{
+		if (pipe(outin) == -1)
+			ft_printf("Error : There is a probleme with the pipe system.\n");
 		id = fork();
 		if (id == 0) // child
 		{
