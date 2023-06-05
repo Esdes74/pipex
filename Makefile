@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/05/04 16:30:54 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/05 11:40:51 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,12 +34,19 @@ HEADER := pipex.h
 SRC := main.c
 OBJ := $(SRC:%.c=.obj/%.o)
 
+# Definition of bonus files variables
+SRC_B := main_bonus.c
+OBJ_B := $(SRC_B:%.c=.obj/%.o)
+
 #
 ### Compilation rules
 #
 
 # Compilation
 all: $(NAME)
+
+bonus: $(OBJ_B)
+	$(CC) $(FLAGS) $(OBJ_B) -o $(NAME) -L. $(LIB)
 
 $(NAME): $(OBJ)
 	$(CC) $(FLAGS) $(OBJ) -o $@ -L. $(LIB)
@@ -60,6 +67,10 @@ val_deb:
 	make -C libft valgrind_deb
 	make -C ./ "FLAGS = -Wall -Werror -Wextra -g"
 
+bonus_deb:
+	make -C libft valgrind_deb
+	make -C ./ "FLAGS = -Wall -Werror -Wextra -g" bonus
+
 #
 ### Cleanup rules
 #
@@ -77,6 +88,10 @@ re: fclean all
 re_deb: fclean debug
 
 re_val: fclean val_deb
+
+re_obj: fclean bonus
+
+re_obj_deb : fclean bonus_deb
 
 FORCE:
 
