@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/05 11:40:51 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/05 17:28:01 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,11 +76,11 @@ bonus_deb:
 #
 
 clean:
-	@rm -rfv $(OBJ)
+	@rm -rfv $(OBJ) $(OBJ_B)
 	make -sC libft clean
 
 fclean:
-	@rm -rfv $(OBJ) $(NAME)
+	@rm -rfv $(OBJ) $(OBJ_B) $(NAME)
 	make -sC libft fclean
 
 re: fclean all
@@ -89,10 +89,11 @@ re_deb: fclean debug
 
 re_val: fclean val_deb
 
-re_obj: fclean bonus
+re_bonus: fclean bonus
 
-re_obj_deb : fclean bonus_deb
+re_bonus_deb : fclean bonus_deb
 
 FORCE:
 
-.PHONY: all clean fclean re FORCE debug re_deb val_deb re_val
+.PHONY: all clean fclean re FORCE debug re_deb val_deb re_val bonus re_bonus 
+.PHONY: re_bonus_deb

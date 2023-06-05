@@ -6,12 +6,11 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/03 15:25:24 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:32:02 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 static char	*cmd_build(char *str)
 {
@@ -82,7 +81,8 @@ static int	parent(int outin[2], char **av, char **environ)
 	char	**splitted;
 	int		outfile;
 
-	wait(NULL);
+	if (wait(NULL) == -1)
+		return (1);
 	close(outin[1]);
 	outfile = open(av[4], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + S_IWUSR + \
 			S_IRGRP + S_IROTH);

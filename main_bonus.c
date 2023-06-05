@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/03 15:25:24 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/05 16:32:07 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 static char	*cmd_build(char *str)
 {
@@ -50,11 +49,14 @@ static void	anihilation(char **splitted)
 	free(splitted);
 }
 
-static int	child(int outin[2], char **av, char **environ)
+int	multivers(int outin[2], char **av, char **environ, int ac)
+
+static int	child(int outin[2], char **av, char **environ, int ac)
 {
 	char	*cmd;
 	char	**splitted;
 	int		infile;
+	int		id;
 
 	close(outin[0]);
 	infile = open(av[1], O_RDONLY);
@@ -71,9 +73,16 @@ static int	child(int outin[2], char **av, char **environ)
 	cmd = cmd_build(splitted[0]);
 	if (cmd == NULL)
 		return (free(splitted), 1);
-	if (execve(cmd, splitted, environ) == -1)
-		perror("Child : command not found");
-	return (free(cmd), anihilation(splitted), 0);
+	id = fork();
+	if (id == 0)
+		if (multivers(outin, av, environ, ac) == 1)
+			return (1);
+	else
+	{
+		if (execve(cmd, splitted, environ) == -1)
+			perror("Child : command not found");
+		return (free(cmd), anihilation(splitted), 0);
+	}
 }
 
 static int	parent(int outin[2], char **av, char **environ)
@@ -82,7 +91,8 @@ static int	parent(int outin[2], char **av, char **environ)
 	char	**splitted;
 	int		outfile;
 
-	wait(NULL);
+	if (waitpid(0, &outfile, WUNTRACED) == -1)
+		return (1);
 	close(outin[1]);
 	outfile = open(av[4], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + S_IWUSR + \
 			S_IRGRP + S_IROTH);
@@ -109,14 +119,14 @@ int	main(int ac, char **av, char *environ[])
 	int		id;
 	int		outin[2];
 
-	if (ac == 5 && environ != NULL)
+	if (ac >= 5 && environ != NULL)
 	{
 		if (pipe(outin) == -1)
 			ft_printf("Error : There is a probleme with the pipe system.\n");
 		id = fork();
 		if (id == 0)
 		{
-			if (child(outin, av, environ) == 1)
+			if (child(outin, av, environ, ac) == 1)
 				return (1);
 		}
 		else if (id > 0)
