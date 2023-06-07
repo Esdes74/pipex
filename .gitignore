@@ -1,7 +1,6 @@
 
 .obj/*
-*.a
-pipex
+libft/libft.a
+libft/*.o
 *.o
-*.a
 pipex

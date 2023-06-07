@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/05 16:32:07 by eslamber         ###   ########.fr       */
+/*   Created: 2023/06/07 15:59:04 by marvin            #+#    #+#             */
+/*   Updated: 2023/06/07 15:59:04 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,14 @@ static void	anihilation(char **splitted)
 }
 
 int	multivers(int outin[2], char **av, char **environ, int ac)
+{
+	(void) outin;
+	(void) av;
+	(void) environ;
+	(void) ac;
+	ft_printf("multi\n");
+	return (0);
+}
 
 static int	child(int outin[2], char **av, char **environ, int ac)
 {
@@ -75,14 +83,17 @@ static int	child(int outin[2], char **av, char **environ, int ac)
 		return (free(splitted), 1);
 	id = fork();
 	if (id == 0)
+	{
 		if (multivers(outin, av, environ, ac) == 1)
 			return (1);
+	}
 	else
 	{
 		if (execve(cmd, splitted, environ) == -1)
 			perror("Child : command not found");
 		return (free(cmd), anihilation(splitted), 0);
 	}
+	return (0);
 }
 
 static int	parent(int outin[2], char **av, char **environ)
