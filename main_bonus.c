@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/07 15:59:04 by marvin           ###   ########.fr       */
+/*   Updated: 2023/06/09 23:40:09 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	main(int ac, char **av, char *environ[])
 					if (dup2(outin[i - 1][0], STDIN_FILENO) == -1) // Récup donnée
 						return (perror("dup outin[i - 1][0]"), 1);
 				}
-				if (i == nb_pipe)
+				if (i == nb_pipe) // si on est dans le dernier on met le OUT en outfile
 				{
 					outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, \
 					S_IRUSR + S_IWUSR + S_IRGRP + S_IROTH);
