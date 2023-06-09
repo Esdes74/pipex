@@ -6,47 +6,60 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/05 16:32:02 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/09 23:37:14 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-static char	*cmd_build(char *str)
-{
-	char	*new;
-	size_t	i;
-	size_t	j;
-	size_t	size;
-
-	if (ft_in('/', str) == 1)
-		return (str);
-	new = NULL;
-	size = 6 + ft_strlen(str);
-	new = (char *) malloc(sizeof(char) * size);
-	if (new == NULL)
-		return (NULL);
-	i = 5;
-	j = 0;
-	new[0] = '/';
-	new[1] = 'b';
-	new[2] = 'i';
-	new[3] = 'n';
-	new[4] = '/';
-	while (j < ft_strlen(str))
-		new[i++] = str[j++];
-	new[i] = '\0';
-	return (new);
-}
 
 static void	anihilation(char **splitted)
 {
 	int	i;
 
 	i = 0;
-	while (splitted[i] != NULL)
+	while (splitted[i])
 		free(splitted[i++]);
 	free(splitted);
+}
+
+static char	*cmd_build(char *str, char **env)
+{
+	char	*new;
+	char	**path;
+	size_t	i;
+
+	if (ft_in('/', str) == 1)
+		return (str);
+	i = 0;
+	new = NULL;
+	while (env[i])
+	{
+		new = ft_strnstr(env[i], "PATH=", ft_strlen(env[i]));
+		if (new != NULL)
+			break;
+		i++;
+	}
+	new += ft_strlen("PATH=");
+	path = ft_split(new, ':');
+	if (path == NULL)
+		return (perror("PATH"), NULL); // Vérifié jusque la, le path retourné est ok
+									   // attention a bien anihiler path a la fin de son utilisation
+	/* new = NULL; */
+	/* size = 6 + ft_strlen(str); */
+	/* new = (char *) malloc(sizeof(char) * size); */
+	/* if (new == NULL) */
+	/* 	return (NULL); */
+	/* i = 5; */
+	/* j = 0; */
+	/* new[0] = '/'; */
+	/* new[1] = 'b'; */
+	/* new[2] = 'i'; */
+	/* new[3] = 'n'; */
+	/* new[4] = '/'; */
+	/* while (j < ft_strlen(str)) */
+	/* 	new[i++] = str[j++]; */
+	/* new[i] = '\0'; */
+	return (NULL);
 }
 
 static int	child(int outin[2], char **av, char **environ)
@@ -67,9 +80,9 @@ static int	child(int outin[2], char **av, char **environ)
 	splitted = ft_split(av[2], ' ');
 	if (splitted == NULL)
 		return (1);
-	cmd = cmd_build(splitted[0]);
+	cmd = cmd_build(splitted[0], environ);
 	if (cmd == NULL)
-		return (free(splitted), 1);
+		return (anihilation(splitted), 1);
 	if (execve(cmd, splitted, environ) == -1)
 		perror("Child : command not found");
 	return (free(cmd), anihilation(splitted), 0);
@@ -96,9 +109,9 @@ static int	parent(int outin[2], char **av, char **environ)
 	splitted = ft_split(av[3], ' ');
 	if (splitted == NULL)
 		return (1);
-	cmd = cmd_build(splitted[0]);
+	cmd = cmd_build(splitted[0], environ);
 	if (cmd == NULL)
-		return (free(splitted), 1);
+		return (anihilation(splitted), 1);
 	if (execve(cmd, splitted, environ) == -1)
 		perror("Parent : command not found");
 	return (free(cmd), anihilation(splitted), 0);
