@@ -1,29 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   free_struc.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 16:31:47 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/10 10:59:24 by eslamber         ###   ########.fr       */
+/*   Created: 2023/06/10 10:33:13 by eslamber          #+#    #+#             */
+/*   Updated: 2023/06/10 10:59:06 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "pipex.h"
 
-# include "libft/libft.h"
-# include <unistd.h>
-# include <sys/wait.h>
-# include <stdio.h>
+void	anihilation(char **splitted)
+{
+	int	i;
 
-void	close_pipe(int outin[2]);
+	i = 0;
+	while (splitted[i])
+		free(splitted[i++]);
+	free(splitted);
+}
 
-void	anihilation(char **double_array);
-
-int		exec_child(int outin[2], char **av, char **env);
-
-int		exec_parent(int outin[2], char **av, char **env);
-
-#endif
+void	close_pipe(int outin[2])
+{
+	if (close(outin[0]) == -1)
+	{
+		perror("close outin[0]");
+		exit(1);
+	}
+	if (close(outin[1]) == -1)
+	{
+		perror("close outin[1]");
+		exit(1);
+	}
+}

@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/05 17:28:01 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/10 10:53:31 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,9 @@ NAME := pipex
 HEADER := pipex.h
 
 # Definition of files variables
-SRC := main.c
+SRC := main.c \
+	   free_struc.c \
+	   exec.c
 OBJ := $(SRC:%.c=.obj/%.o)
 
 # Definition of bonus files variables
@@ -55,7 +57,7 @@ $(NAME): $(OBJ)
 	$(CC) $(FLAGS) $(INC) -c $< -o $@
 
 $(LIB): FORCE
-	make -sC libft
+	make -C libft
 
 # Debug
 debug:
