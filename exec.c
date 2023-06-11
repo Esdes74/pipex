@@ -6,13 +6,15 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 10:48:21 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/10 11:03:08 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/11 10:55:10 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 static char	*cmd_build(char *str, char **env);
+static char	*search_command(char *str, char *new);
+int	exec_parent(int outin[2], char **av, char **environ);
 
 int	exec_child(int outin[2], char **av, char **environ)
 {
@@ -73,7 +75,6 @@ static char	*cmd_build(char *str, char **env)
 {
 	char	*new;
 	char	*cmd;
-	char	**path;
 	size_t	i;
 
 	if (ft_in('/', str) == 1)
@@ -88,6 +89,18 @@ static char	*cmd_build(char *str, char **env)
 		i++;
 	}
 	new += ft_strlen("PATH=");
+	cmd = search_command(str, new);
+	if (cmd == NULL)
+		return (NULL);
+	return (cmd);
+}
+
+static char	*search_command(char *str, char *new)
+{
+	char	**path;
+	char	*cmd;
+	int		i;
+
 	path = ft_split(new, ':');
 	if (path == NULL)
 		return (perror("PATH"), NULL);
