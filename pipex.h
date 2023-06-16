@@ -22,8 +22,10 @@ void	close_pipe(int outin[2]);
 
 void	anihilation(char **double_array);
 
-int		exec_child(int outin[2], char **av, char **env);
+char	*cmd_build(char *str, char **env);
 
-int		exec_parent(int outin[2], char **av, char **env);
+int	child(int outin[2], char **av, char **environ);
+
+int	parent(int outin[2], char **av, char **environ);
 
 #endif

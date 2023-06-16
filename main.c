@@ -12,9 +12,6 @@
 
 #include "pipex.h"
 
-static int	child(int outin[2], char **av, char **environ);
-static int	parent(int outin[2], char **av, char **environ);
-
 int	main(int ac, char **av, char *environ[])
 {
 	int		outin[2];
@@ -35,30 +32,4 @@ int	main(int ac, char **av, char *environ[])
 		ft_printf("Error : You don't have enought parameters.\n Or the \
 environnement is NULL\n");
 	return (0);
-}
-
-static int	child(int outin[2], char **av, char **environ)
-{
-	int		id;
-
-	id = fork();
-	if (id == 0)
-		return (exec_child(outin, av, environ));
-	else if (id == -1)
-		return (perror("fork child"), 1);
-	else
-		return (0);
-}
-
-static int	parent(int outin[2], char **av, char **environ)
-{
-	int		id;
-
-	id = fork();
-	if (id == 0)
-		return (exec_parent(outin, av, environ));
-	else if (id == -1)
-		return (perror("fork parent"), 1);
-	else
-		return (0);
 }

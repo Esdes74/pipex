@@ -12,11 +12,36 @@
 
 #include "pipex.h"
 
-static char	*cmd_build(char *str, char **env);
-static char	*search_command(char *str, char *new);
-int	exec_parent(int outin[2], char **av, char **environ);
+static int	exec_child(int outin[2], char **av, char **environ);
+static int	exec_parent(int outin[2], char **av, char **environ);
 
-int	exec_child(int outin[2], char **av, char **environ)
+int	child(int outin[2], char **av, char **environ)
+{
+	int		id;
+
+	id = fork();
+	if (id == 0)
+		return (exec_child(outin, av, environ));
+	else if (id == -1)
+		return (perror("fork child"), 1);
+	else
+		return (0);
+}
+
+int	parent(int outin[2], char **av, char **environ)
+{
+	int		id;
+
+	id = fork();
+	if (id == 0)
+		return (exec_parent(outin, av, environ));
+	else if (id == -1)
+		return (perror("fork parent"), 1);
+	else
+		return (0);
+}
+
+static int	exec_child(int outin[2], char **av, char **environ)
 {
 	char	*cmd;
 	char	**splitted;
@@ -43,7 +68,7 @@ int	exec_child(int outin[2], char **av, char **environ)
 	return (free(cmd), anihilation(splitted), 1);
 }
 
-int	exec_parent(int outin[2], char **av, char **environ)
+static int	exec_parent(int outin[2], char **av, char **environ)
 {
 	char	*cmd;
 	char	**splitted;
@@ -69,57 +94,4 @@ int	exec_parent(int outin[2], char **av, char **environ)
 	if (execve(cmd, splitted, environ) == -1)
 		perror("Parent : command not found");
 	return (free(cmd), anihilation(splitted), 1);
-}
-
-static char	*cmd_build(char *str, char **env)
-{
-	char	*new;
-	char	*cmd;
-	size_t	i;
-
-	if (ft_in('/', str) == 1)
-		return (str);
-	i = 0;
-	new = NULL;
-	while (env[i])
-	{
-		new = ft_strnstr(env[i], "PATH=", ft_strlen(env[i]));
-		if (new != NULL)
-			break;
-		i++;
-	}
-	new += ft_strlen("PATH=");
-	cmd = search_command(str, new);
-	if (cmd == NULL)
-		return (NULL);
-	return (cmd);
-}
-
-static char	*search_command(char *str, char *new)
-{
-	char	**path;
-	char	*cmd;
-	int		i;
-
-	path = ft_split(new, ':');
-	if (path == NULL)
-		return (perror("PATH"), NULL);
-	i = 0;
-	while (path[i])
-	{
-		new = ft_strjoin(path[i], "/");
-		if (new == NULL)
-			return (anihilation(path), perror("join new"), NULL);
-		cmd = ft_strjoin(new, str);
-		free(new);
-		new = NULL;
-		if (cmd == NULL)
-			return (anihilation(path), perror("join cmd"), NULL);
-		if (access(cmd, F_OK | X_OK) == 0)
-			return (anihilation(path), cmd);
-		free(cmd);
-		cmd = NULL;
-		i++;
-	}
-	return (anihilation(path), free(cmd), NULL);
 }

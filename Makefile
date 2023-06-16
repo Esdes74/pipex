@@ -33,11 +33,14 @@ HEADER := pipex.h
 # Definition of files variables
 SRC := main.c \
 	   free_struc.c \
-	   exec.c
+	   exec.c \
+	   cmd_build.c
 OBJ := $(SRC:%.c=.obj/%.o)
 
 # Definition of bonus files variables
-SRC_B := main_bonus.c
+SRC_B := main_bonus.c \
+		 free_struc.c \
+		 cmd_build.c
 OBJ_B := $(SRC_B:%.c=.obj/%.o)
 
 #
