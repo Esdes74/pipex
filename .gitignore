@@ -6,3 +6,4 @@ libft/*.o
 pipex
 outfile
 *.a
+*.json
