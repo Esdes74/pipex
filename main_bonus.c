@@ -6,11 +6,11 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/09 23:40:09 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/17 09:43:58 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 static int	close_all_pipes(int outin[][2], int nb_pipe)
 {
@@ -28,8 +28,14 @@ static int	close_all_pipes(int outin[][2], int nb_pipe)
 	return (0);
 }
 
-int	child()
+static int	exec_child(int outin[][2], int ac, char **av, char **environ)
 {
+	int		infile;
+	int		outfile;
+	char	**splitted;
+	char	*cmd;
+	int		i;
+
 	if (i == 0) // Si on est dans le premier processeur alors on 
 			// récupère le fichier d'entrer
 	{
@@ -69,47 +75,59 @@ int	child()
 	if (cmd == NULL)
 		return (perror("build"), anihilation(splitted), 1);
 	if (close_all_pipes(outin, nb_pipe) == 1)
-		return (perror("close pipes"), free(cmd), anihilation(splitted), 1);
+		return (perror("close pipes"), free(cmd), anihilation(splitted), 2);
 	if (execve(cmd, splitted, environ) == -1)
 		perror("Child : command not found");
-	return (free(cmd), anihilation(splitted), 1);
+	return (free(cmd), anihilation(splitted), 2);
+}
+
+static int	prep_pipe(t_pipex *struc)
+{
+	int	i;
+
+	i = 0;
+	struc->nb_proc = ac - 3;
+	struc->nb_pipe = struc->nb_proc - 1;
+	while (i < *nb_pipe) // Création du tableau de pipe
+	{
+		if (pipe(struc->outin[i]) == -1)
+			return (close_all_pipes(struc->outin, i), 1);
+		i++;
+	}
+	return (0);
+}
+
+static int	exec(int outin[][2], int ac, char **av, char **environ)
+{
+	int	id;
+
+	id = fork();
+	if (id == -1)
+		return (perror("fork"), 1);
+	if (id == 0) // child
+		return (exec_child(outin, ac, av, environ));
+	return (0);
 }
 
 int	main(int ac, char **av, char *environ[])
 {
-	int		id[ac - 3];
-	int		nb_pipe;
-	int		nb_proc;
 	int		outin[ac - 4][2];
 	int		i;
-	int		infile;
-	int		outfile;
-	char	**splitted;
-	char	*cmd;
+	t_pipex	struc;
 
 	if (ac >= 5 && environ != NULL)
 	{
+		struc.outin = outin;
+		if (prep_pipe(&struc) == 1)
+			return (1);
 		i = 0;
-		nb_proc = ac - 3;
-		nb_pipe = nb_proc - 1;
-		while (i < nb_pipe) // Création du tableau de pipe
-		{
-			if (pipe(outin[i]) == -1)
-				return (close_all_pipes(outin, i), 1);
-			i++;
-		}
-		i = 0;
-		while (i < nb_proc) // Boucle des multiples processeurs
+		while (i++ < nb_proc) // Boucle des multiples processeurs
 							// On commence a la première commande
 		{
-			id[i] = fork();
-			if (id[i] == -1)
-				return (perror("fork"), 1);
-			if (id[i] == 0) // child
-			{
-				child();
-			}
-			i++;
+			if (exec(outin, ac, av, environ) == 2)
+				return (1);
+			else
+				break;
 		}
 		if (close_all_pipes(outin, nb_pipe) == 1)
 			return (perror("close pipes"), 1);
