@@ -35,4 +35,8 @@ int		child(int outin[2], char **av, char **environ);
 
 int		parent(int outin[2], char **av, char **environ);
 
+int     check_here_doc(char *av);
+
+int     set_up_heredoc(char **av);
+
 #endif

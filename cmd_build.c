@@ -21,7 +21,7 @@ char	*cmd_build(char *str, char **env)
 	size_t	i;
 
 	if (ft_in('/', str) == 1)
-		return (str);
+		return (ft_strdup(str));
 	i = 0;
 	new = NULL;
 	while (env[i])
@@ -31,10 +31,12 @@ char	*cmd_build(char *str, char **env)
 			break ;
 		i++;
 	}
+	if (new == NULL)
+		return (ft_printf_fd(STDERR_FILENO, "PATH not found"), NULL); // TODO : modifier pour qu'a chaque fois qu'il y a un problème de commande ca mette "cmd : command not found"
 	new += ft_strlen("PATH=");
 	cmd = search_command(str, new);
 	if (cmd == NULL)
-		return (NULL);
+		return (perror("CMD"), NULL);
 	return (cmd);
 }
 
@@ -64,5 +66,5 @@ static char	*search_command(char *str, char *new)
 		cmd = NULL;
 		i++;
 	}
-	return (anihilation(path), free(cmd), NULL);
+	return (anihilation(path), free(cmd), perror("not found"), NULL);
 }
