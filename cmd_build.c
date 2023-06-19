@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:13:17 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/17 09:13:25 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/19 10:25:32 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	*cmd_build(char *str, char **env)
 	{
 		new = ft_strnstr(env[i], "PATH=", ft_strlen(env[i]));
 		if (new != NULL)
-			break;
+			break ;
 		i++;
 	}
 	new += ft_strlen("PATH=");
