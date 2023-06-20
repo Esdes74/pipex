@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:13:17 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/19 10:25:32 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/20 11:23:31 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@ char	*cmd_build(char *str, char **env)
 		i++;
 	}
 	if (new == NULL)
-		return (ft_printf_fd(STDERR_FILENO, "PATH not found"), NULL); // TODO : modifier pour qu'a chaque fois qu'il y a un problème de commande ca mette "cmd : command not found"
+		return (NULL);
 	new += ft_strlen("PATH=");
 	cmd = search_command(str, new);
 	if (cmd == NULL)
-		return (perror("CMD"), NULL);
+		return (NULL);
 	return (cmd);
 }
 
@@ -48,23 +48,23 @@ static char	*search_command(char *str, char *new)
 
 	path = ft_split(new, ':');
 	if (path == NULL)
-		return (perror("PATH"), NULL);
+		return (NULL);
 	i = 0;
 	while (path[i])
 	{
 		new = ft_strjoin(path[i], "/");
 		if (new == NULL)
-			return (anihilation(path), perror("join new"), NULL);
+			return (anihilation(path), errors(JOIN, "0"), NULL);
 		cmd = ft_strjoin(new, str);
 		free(new);
 		new = NULL;
 		if (cmd == NULL)
-			return (anihilation(path), perror("join cmd"), NULL);
+			return (anihilation(path), errors(JOIN, "0"), NULL);
 		if (access(cmd, F_OK | X_OK) == 0)
 			return (anihilation(path), cmd);
 		free(cmd);
 		cmd = NULL;
 		i++;
 	}
-	return (anihilation(path), free(cmd), perror("not found"), NULL);
+	return (anihilation(path), free(cmd), NULL);
 }

@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/10 10:53:31 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/20 08:38:09 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,8 @@ HEADER := pipex.h
 SRC := main.c \
 	   free_struc.c \
 	   exec.c \
-	   cmd_build.c
+	   cmd_build.c \
+	   errors.c
 OBJ := $(SRC:%.c=.obj/%.o)
 
 # Definition of bonus files variables

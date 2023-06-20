@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 16:31:47 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/19 10:24:10 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/20 11:08:36 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,24 @@
 # include <sys/wait.h>
 # include <stdio.h>
 
-void	close_pipe(int outin[2]);
+typedef enum e_errors{
+	PIPE,
+	CONDITIONS,
+	FORK,
+	OPEN,
+	DUP,
+	CLOSE,
+	SPLIT,
+	CMD,
+	EXEC,
+	CLOSE_P0,
+	CLOSE_P1,
+	JOIN,
+}	t_errors;
+
+void	errors(t_errors error, char *cmd);
+
+int		close_pipe(int outin[2]);
 
 void	anihilation(char **double_array);
 
