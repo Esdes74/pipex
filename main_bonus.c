@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/11 17:49:34 by marvin           ###   ########.fr       */
+/*   Updated: 2023/06/20 17:22:18 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,11 @@ int	main(int ac, char **av, char *environ[])
 	char	*cmd;
 	int		x;
 
-	x = 0;
-	if (check_here_doc(av[1]) == 0) // je regarde si le premier argument est here_doc
-	{
-		if (set_up_heredoc(av) == -1)
-			return(-1);
-		x = 1;
-	}
+	x = check_here_doc(av);
+	if (x <= 0) // je regarde si le premier argument est here_doc
+		x += 1;
+	else
+		return (1);
 	if (ac >= 5 && environ != NULL)
 	{
 		i = 0;
