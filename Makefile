@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/20 17:00:48 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/21 10:41:45 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ SRC := main.c \
 OBJ := $(SRC:%.c=.obj/%.o)
 
 # Definition of bonus files variables
-SRC_B := main_bonus_saved.c \
+SRC_B := main_bonus.c \
 		 free_struc.c \
 		 cmd_build.c \
 		 here_doc.c \
