@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:35:27 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/20 17:29:13 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/21 17:34:59 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # define HERE_FILE ".here_doc.tmp"
 
 typedef enum e_errors{
-	OK,
 	PIPE,
 	CONDITIONS,
 	FORK,
@@ -34,6 +33,7 @@ typedef enum e_errors{
 	CLOSE_P0,
 	CLOSE_P1,
 	JOIN,
+	OK,
 	OPEN_HERE_DOC,
 	GNL,
 	STRDUP,

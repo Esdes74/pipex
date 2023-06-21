@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/21 10:41:45 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/21 17:35:37 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,8 @@ INC := -Ilibft
 
 # Definition of project variables
 NAME := pipex
-HEADER := pipex.h
+HEADER := pipex.h \
+		  pipex_bonus.h
 
 # Definition of files variables
 SRC := main.c \
