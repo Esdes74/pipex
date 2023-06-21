@@ -39,7 +39,7 @@ SRC := main.c \
 OBJ := $(SRC:%.c=.obj/%.o)
 
 # Definition of bonus files variables
-SRC_B := main_bonus.c \
+SRC_B := main_bonus_saved.c \
 		 free_struc.c \
 		 cmd_build.c \
 		 here_doc.c \

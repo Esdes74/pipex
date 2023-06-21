@@ -18,6 +18,8 @@
 # include <sys/wait.h>
 # include <stdio.h>
 
+# define HERE_FILE ".here_doc.tmp"
+
 typedef enum e_errors{
 	OK,
 	PIPE,

@@ -41,10 +41,13 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	char	**splitted;
 	char	*cmd;
 
-	if (pip->ind_child == 0) // Si on est dans le premier processeur alors on 
+	if (pip->ind_child == 0 || pip->here_doc == 1) // Si on est dans le premier processeur alors on 
 			// récupère le fichier d'entrer
 	{
-		infile = open(av[1], O_RDONLY);
+		if (pip->here_doc == 1)
+			infile = open(HERE_FILE, O_RDONLY);
+		else
+			infile = open(av[1], O_RDONLY);
 		if (infile == -1)
 			return (anihilation((char **) pip->outin), errors(OPEN, NULL), 1);
 		if (dup2(infile, STDIN_FILENO) == -1) // Récup donnée
@@ -87,8 +90,8 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		anihilation((char **) pip->outin);
 		return (free(cmd), anihilation(splitted), 2);
 	}
-	if (execve(cmd, splitted, environ) == -1)
-		errors(EXEC, "0");
+	execve(cmd, splitted, environ);
+	errors(EXEC, "0");
 	anihilation((char **) pip->outin);
 	return (free(cmd), anihilation(splitted), 2);
 }
@@ -149,7 +152,7 @@ int	main(int ac, char **av, char *environ[])
 	{
 		if (prep_pipe(&struc, ac) == 1)
 			return (1);
-		struc.ind_child = 0;
+		struc.ind_child = -1;
 		while (struc.ind_child++ < struc.nb_proc)
 		{
 			if (exec(&struc, ac, av, environ) == 2)
@@ -170,7 +173,7 @@ static int	end(t_pipex *struc)
 {
 	anihilation((char **) struc->outin);
 	if (struc->here_doc == 1)
-		if (unlink(".here_doc.tmp") == -1)
+		if (unlink(HERE_FILE) == -1)
 			errors_bonus(UNLINK);
 	if (struc->error != OK)
 		return (1);

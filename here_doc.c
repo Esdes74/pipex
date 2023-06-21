@@ -33,7 +33,7 @@ static int    set_up_heredoc(char **av)
     char *buf;
     int lenght;
     
-    temp = open(".here_doc.tmp", O_WRONLY | O_APPEND | O_CREAT, 0644); // O_APPEND permet de dire "met à la suite"
+    temp = open(HERE_FILE, O_WRONLY | O_APPEND | O_CREAT, 0644); // O_APPEND permet de dire "met à la suite"
     if (temp == -1)
 		errors_bonus(OPEN_HERE_DOC);
     while (1)

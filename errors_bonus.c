@@ -17,13 +17,13 @@ void	errors_bonus(t_errors error)
 {
 	if (error == OPEN_HERE_DOC)
 		ft_printf_fd(ERR, "Error : Problem when opening file for here_doc\n");
-	if (error == GNL)
+	else if (error == GNL)
 		ft_printf_fd(ERR, "Error : Problem with get_next_line function\n");
-	if (error == STRDUP)
+	else if (error == STRDUP)
 		ft_printf_fd(ERR, "Error : Problem with ft_strdup function\n");
-	if (error == WRITE)
+	else if (error == WRITE)
 		ft_printf_fd(ERR, "Error : Problem with write function\n");
-	if (error == UNLINK)
+	else if (error == UNLINK)
 		ft_printf_fd(ERR, "Error : Problem with unlink function\n");
 	exit(1);
 }
