@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 12:05:24 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 12:23:56 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static int	close_all_pipes(t_pipex *struc)
 {
 	int	j;
-	int	test = -1;
 
 	j = 0;
 	while (j < struc->nb_pipe)
@@ -25,8 +24,7 @@ static int	close_all_pipes(t_pipex *struc)
 			struc->error = CLOSE_P0;
 			return (errors(CLOSE_P0, "0"), anihilation((char **) struc->outin), 1);
 		}
-		close(struc->outin[j][1]);
-		if (test == -1)
+		if (close(struc->outin[j][1]) == -1)
 		{
 			struc->error = CLOSE_P1;
 			return (errors(CLOSE_P1, "0"), anihilation((char **) struc->outin), 1);
@@ -43,8 +41,9 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	int		outfile;
 	char	**splitted;
 	char	*cmd;
+	(void) ac;
 
-	if (pip->ind_child == 0 || pip->here_doc == 1) // Si on est dans le premier processeur alors on 
+	if (pip->ind_child == 0) // Si on est dans le premier processeur alors on 
 			// récupère le fichier d'entrer
 	{
 		if (pip->here_doc == 1)
@@ -52,36 +51,35 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		else
 			infile = open(av[1], O_RDONLY);
 		if (infile == -1)
-			return (errors(OPEN, NULL), 1);
+			return (errors(OPEN, "0"), 1);
 		if (dup2(infile, STDIN_FILENO) == -1) // Récup donnée
-			return (errors(DUP, NULL), 1);
+			return (errors(DUP, "0"), 1);
 		if (close(infile) == -1)
-			return (errors(CLOSE, NULL), 1);
+			return (errors(CLOSE, "0"), 1);
 	}
 	else
 	{
 		if (dup2(pip->outin[pip->ind_child - 1][0], STDIN_FILENO) == -1) // Récup donnée
-			return (errors(DUP, NULL), 1);
+			return (errors(DUP, "0"), 1);
 	}
 	if (pip->ind_child == pip->nb_pipe) // si on est dans le dernier on met le OUT en outfile
 	{
-		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, \
-		S_IRUSR + S_IWUSR + S_IRGRP + S_IROTH);
+		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + S_IWUSR + S_IRGRP + S_IROTH);
 		if (outfile < 0)
-			return (errors(OPEN, NULL), 1);
+			return (errors(OPEN, "0"), 1);
 		if (dup2(outfile, STDOUT_FILENO) == -1)
-			return (errors(DUP, NULL), 1);
+			return (errors(DUP, "0"), 1);
 		if (close(outfile) == -1)
-			return (errors(CLOSE, NULL), 1);
+			return (errors(CLOSE, "0"), 1);
 	}
 	else
 	{
 		if (dup2(pip->outin[pip->ind_child][1], STDOUT_FILENO) == -1) // Récup donnée
-			return (errors(DUP, NULL), 1);
+			return (errors(DUP, "0"), 1);
 	}
 	splitted = ft_split(av[pip->ind_child + pip->here_doc + 2], ' '); // Execution de la commande
 	if (splitted == NULL)
-		return (errors(SPLIT, NULL), 1);
+		return (errors(SPLIT, "0"), 1);
 	cmd = cmd_build(splitted[0], environ);
 	if (cmd == NULL)
 		return (errors(CMD, splitted[0]), anihilation(splitted), 1);
