@@ -31,6 +31,7 @@ static int	close_all_pipes(t_pipex *struc)
 		}
 		j++;
 	}
+	anihilation((char **) struc->outin);
 	return (0);
 }
 
@@ -49,50 +50,49 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		else
 			infile = open(av[1], O_RDONLY);
 		if (infile == -1)
-			return (anihilation((char **) pip->outin), errors(OPEN, NULL), 1);
+			return (1);
 		if (dup2(infile, STDIN_FILENO) == -1) // Récup donnée
-			return (anihilation((char **) pip->outin), errors(DUP, NULL), 1);
+			return (1);
 		if (close(infile) == -1)
-			return (anihilation((char **) pip->outin), errors(CLOSE, NULL), 1);
+			return (errors(CLOSE, NULL), 1);
 	}
 	else
 	{
 		if (dup2(pip->outin[pip->ind_child - 1][0], STDIN_FILENO) == -1) // Récup donnée
-			return (anihilation((char **) pip->outin), errors(DUP, NULL), 1);
+			return (errors(DUP, NULL), 1);
 	}
 	if (pip->ind_child == pip->nb_pipe) // si on est dans le dernier on met le OUT en outfile
 	{
 		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, \
 		S_IRUSR + S_IWUSR + S_IRGRP + S_IROTH);
 		if (outfile < 0)
-			return (anihilation((char **) pip->outin), errors(OPEN, NULL), 1);
+			return (errors(OPEN, NULL), 1);
 		if (dup2(outfile, STDOUT_FILENO) == -1)
-			return (anihilation((char **) pip->outin), errors(DUP, NULL), 1);
+			return (errors(DUP, NULL), 1);
 		if (close(outfile) == -1)
-			return (anihilation((char **) pip->outin), errors(CLOSE, NULL), 1);
+			return (errors(CLOSE, NULL), 1);
 	}
 	else
 	{
 		if (dup2(pip->outin[pip->ind_child][1], STDOUT_FILENO) == -1) // Récup donnée
-			return (anihilation((char **) pip->outin), errors(DUP, NULL), 1);
+			return (errors(DUP, NULL), 1);
 	}
-	splitted = ft_split(av[pip->ind_child + 2], ' '); // Execution de la commande
+	splitted = ft_split(av[pip->ind_child + pip->here_doc + 2], ' '); // Execution de la commande
 	if (splitted == NULL)
-		return (anihilation((char **) pip->outin), errors(SPLIT, NULL), 1);
+		return (errors(SPLIT, NULL), 1);
 	cmd = cmd_build(splitted[0], environ);
 	if (cmd == NULL)
 	{
-		anihilation((char **) pip->outin);
+		// anihilation((char **) pip->outin);
 		return (errors(CMD, splitted[0]), anihilation(splitted), 1);
 	}
 	if (close_all_pipes(pip) == 1)
 	{
-		anihilation((char **) pip->outin);
+		// anihilation((char **) pip->outin);
 		return (free(cmd), anihilation(splitted), 2);
 	}
 	execve(cmd, splitted, environ);
 	errors(EXEC, "0");
-	anihilation((char **) pip->outin);
 	return (free(cmd), anihilation(splitted), 2);
 }
 
@@ -101,12 +101,12 @@ static int	prep_pipe(t_pipex *pip, int ac)
 	int	i;
 
 	i = 0;
-	pip->nb_proc = ac - 3;
+	pip->nb_proc = ac - 3 - pip->here_doc;
 	pip->nb_pipe = pip->nb_proc - 1;
 	pip->error = OK;
 	pip->outin = (int **) ft_calloc(pip->nb_proc, sizeof(int*));
 	if (pip->outin == NULL)
-		return (ft_printf_fd(2, "Error : Problem with callocfunction\n"), 1);
+		return (ft_printf_fd(2, "Error : Problem with calloc function\n"), 1);
 	while (i < pip->nb_pipe) // Création du tableau de pipe
 	{
 		pip->outin[i] = (int *) ft_calloc(2, sizeof(int));
@@ -146,6 +146,7 @@ static int	end(t_pipex *struc);
 int	main(int ac, char **av, char *environ[])
 {
 	t_pipex	struc;
+	int		test;
 
 	struc.here_doc = check_here_doc(av);
 	if (ac >= 5 && environ != NULL && struc.here_doc++ <= 0)
@@ -155,9 +156,10 @@ int	main(int ac, char **av, char *environ[])
 		struc.ind_child = -1;
 		while (struc.ind_child++ < struc.nb_proc)
 		{
-			if (exec(&struc, ac, av, environ) == 2)
+			test = exec(&struc, ac, av, environ);
+			if (test == 2)
 				return (1);
-			else
+			else if (test == 1)
 				break;
 		}
 		if (close_all_pipes(&struc) == 1)
@@ -171,7 +173,7 @@ int	main(int ac, char **av, char *environ[])
 
 static int	end(t_pipex *struc)
 {
-	anihilation((char **) struc->outin);
+	// anihilation((char **) struc->outin);
 	if (struc->here_doc == 1)
 		if (unlink(HERE_FILE) == -1)
 			errors_bonus(UNLINK);
