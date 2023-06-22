@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   here_doc.c                                         :+:      :+:    :+:   */
+/*   prep_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:40:39 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/22 17:25:32 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 19:18:05 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ static void	check_here_doc(char **av, t_pipex *struc, int ac)
 	else
 		struc->here_doc = 0;
 	struc->nb_proc = ac - 3 - struc->here_doc;
-	struc->nb_pipe = struc->nb_proc - 1;
+	struc->nb_pipe = struc->nb_proc - 1 + struc->here_doc;
 	struc->error = OK;
-	struc->outin = (int **) ft_calloc(struc->nb_proc, sizeof(int *));
+	struc->outin = (int **) ft_calloc(struc->nb_pipe + 1, sizeof(int *));
 }
 
 static int	set_up_heredoc(char **av, t_pipex *struc)

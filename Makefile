@@ -6,7 +6,7 @@
 #    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/22 16:06:36 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/22 19:18:19 by eslamber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,7 @@ SRC_B := main_bonus_saved.c \
 		 free_struc.c \
 		 free_struc_bonus.c \
 		 cmd_build.c \
-		 here_doc.c \
+		 prep_pipe.c \
 		 errors.c \
 		 errors_bonus.c
 OBJ_B := $(SRC_B:%.c=.obj/%.o)

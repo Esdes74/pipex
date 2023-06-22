@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 16:57:41 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 19:11:42 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,17 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		if (close(infile) == -1)
 			return (errors(CLOSE, "0"), 1);
 	}
-	else if (pip->ind_child != 0)
+	else if (pip->ind_child == 0 && pip->here_doc == 1)
 	{
-		if (dup2(pip->outin[pip->ind_child - 1][0], STDIN_FILENO) == -1) // Récup donnée
+		if (dup2(pip->outin[pip->ind_child][0], STDIN_FILENO) == -1) // Récup donnée
 			return (errors(DUP, "0"), 1);
 	}
-	if (pip->ind_child == pip->nb_pipe) // si on est dans le dernier on met le OUT en outfile
+	else if (pip->ind_child != 0)
+	{
+		if (dup2(pip->outin[pip->ind_child - 1 + pip->here_doc][0], STDIN_FILENO) == -1) // Récup donnée
+			return (errors(DUP, "0"), 1);
+	}
+	if (pip->ind_child == pip->nb_pipe - pip->here_doc) // si on est dans le dernier on met le OUT en outfile
 	{
 		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + \
 				S_IWUSR + S_IRGRP + S_IROTH);
@@ -48,7 +53,7 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	}
 	else
 	{
-		if (dup2(pip->outin[pip->ind_child][1], STDOUT_FILENO) == -1) // Récup donnée
+		if (dup2(pip->outin[pip->ind_child + pip->here_doc][1], STDOUT_FILENO) == -1) // Récup donnée
 			return (errors(DUP, "0"), 1);
 	}
 	splitted = ft_split(av[pip->ind_child + pip->here_doc + 2], ' '); // Execution de la commande
@@ -68,7 +73,6 @@ static int	exec(t_pipex *struc, int ac, char **av, char **environ)
 {
 	int	id;
 
-	ft_printf_fd(STDERR_FILENO, "i = %d\n", struc->ind_child);
 	id = fork();
 	if (id == -1)
 	{
