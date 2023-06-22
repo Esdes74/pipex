@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:35:27 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 12:30:18 by marvin           ###   ########.fr       */
+/*   Updated: 2023/06/22 16:06:17 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ int		child(int outin[2], char **av, char **environ);
 
 int		parent(int outin[2], char **av, char **environ);
 
-int		prep_pipe(t_pipex *pip, int ac);
+int		prep_pipe(t_pipex *pip, char **av, int ac);
 
+int		close_all_pipes(t_pipex *struc);
 #endif

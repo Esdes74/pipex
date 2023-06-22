@@ -6,34 +6,11 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 12:28:47 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 16:57:41 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
-
-static int	close_all_pipes(t_pipex *struc)
-{
-	int	j;
-
-	j = 0;
-	while (j < struc->nb_pipe)
-	{
-		if (close(struc->outin[j][0]) == -1)
-		{
-			struc->error = CLOSE_P0;
-			return (errors(CLOSE_P0, "0"), anihilation((char **) struc->outin), 1);
-		}
-		if (close(struc->outin[j][1]) == -1)
-		{
-			struc->error = CLOSE_P1;
-			return (errors(CLOSE_P1, "0"), anihilation((char **) struc->outin), 1);
-		}
-		j++;
-	}
-	anihilation((char **) struc->outin);
-	return (0);
-}
 
 static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 {
@@ -53,7 +30,7 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		if (close(infile) == -1)
 			return (errors(CLOSE, "0"), 1);
 	}
-	else
+	else if (pip->ind_child != 0)
 	{
 		if (dup2(pip->outin[pip->ind_child - 1][0], STDIN_FILENO) == -1) // Récup donnée
 			return (errors(DUP, "0"), 1);
@@ -91,6 +68,7 @@ static int	exec(t_pipex *struc, int ac, char **av, char **environ)
 {
 	int	id;
 
+	ft_printf_fd(STDERR_FILENO, "i = %d\n", struc->ind_child);
 	id = fork();
 	if (id == -1)
 	{
@@ -111,7 +89,7 @@ int	main(int ac, char **av, char *environ[])
 
 	if (ac >= 5 && environ != NULL)
 	{
-		if (prep_pipe(&struc, ac) == 1)
+		if (prep_pipe(&struc, av, ac) == 1)
 			return (1);
 		struc.ind_child = -1;
 		while (++struc.ind_child < struc.nb_proc)
@@ -133,9 +111,9 @@ int	main(int ac, char **av, char *environ[])
 
 static int	end(t_pipex *struc)
 {
-	if (struc->here_doc == 1)
-		if (unlink(HERE_FILE) == -1)
-			errors_bonus(UNLINK);
+	/* if (struc->here_doc == 1) */
+	/* 	if (unlink(HERE_FILE) == -1) */
+	/* 		errors_bonus(UNLINK); */
 	if (struc->error != OK)
 		return (1);
 	return (0);
