@@ -41,15 +41,11 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	int		outfile;
 	char	**splitted;
 	char	*cmd;
-	(void) ac;
 
-	if (pip->ind_child == 0) // Si on est dans le premier processeur alors on 
+	if (pip->ind_child == 0 && pip->here_doc == 0) // Si on est dans le premier processeur alors on 
 			// récupère le fichier d'entrer
 	{
-		if (pip->here_doc == 1)
-			infile = open(HERE_FILE, O_RDONLY);
-		else
-			infile = open(av[1], O_RDONLY);
+		infile = open(av[1], O_RDONLY);
 		if (infile == -1)
 			return (errors(OPEN, "0"), 1);
 		if (dup2(infile, STDIN_FILENO) == -1) // Récup donnée
@@ -91,36 +87,6 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	return (free(cmd), anihilation(splitted), 2);
 }
 
-static int	prep_pipe(t_pipex *pip, int ac)
-{
-	int	i;
-
-	i = 0;
-	pip->nb_proc = ac - 3 - pip->here_doc;
-	pip->nb_pipe = pip->nb_proc - 1;
-	pip->error = OK;
-	pip->outin = (int **) ft_calloc(pip->nb_proc, sizeof(int*));
-	if (pip->outin == NULL)
-		return (ft_printf_fd(2, "Error : Problem with calloc function\n"), 1);
-	while (i < pip->nb_pipe) // Création du tableau de pipe
-	{
-		pip->outin[i] = (int *) ft_calloc(2, sizeof(int));
-		if (pip->outin[i] == NULL)
-		{
-			pip->nb_pipe = i;
-			ft_printf_fd(2, "Error : Problem with calloc function\n");
-			return (close_all_pipes(pip), 1);
-		}
-		if (pipe(pip->outin[i]) == -1)
-		{
-			pip->nb_pipe = i;
-			return (close_all_pipes(pip), errors(PIPE, NULL), 1);
-		}
-		i++;
-	}
-	return (0);
-}
-
 static int	exec(t_pipex *struc, int ac, char **av, char **environ)
 {
 	int	id;
@@ -143,8 +109,7 @@ int	main(int ac, char **av, char *environ[])
 	t_pipex	struc;
 	int		test;
 
-	struc.here_doc = check_here_doc(av);
-	if (ac >= 5 && environ != NULL && struc.here_doc++ <= 0)
+	if (ac >= 5 && environ != NULL)
 	{
 		if (prep_pipe(&struc, ac) == 1)
 			return (1);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:35:27 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/21 17:34:59 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 12:30:18 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,6 @@ int		child(int outin[2], char **av, char **environ);
 
 int		parent(int outin[2], char **av, char **environ);
 
-int     check_here_doc(char **av);
+int		prep_pipe(t_pipex *pip, int ac);
 
 #endif
