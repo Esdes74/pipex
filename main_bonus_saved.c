@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 12:23:56 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 12:28:47 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 	}
 	if (pip->ind_child == pip->nb_pipe) // si on est dans le dernier on met le OUT en outfile
 	{
-		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + S_IWUSR + S_IRGRP + S_IROTH);
+		outfile = open(av[ac - 1], O_CREAT | O_RDWR | O_TRUNC, S_IRUSR + \
+				S_IWUSR + S_IRGRP + S_IROTH);
 		if (outfile < 0)
 			return (errors(OPEN, "0"), 1);
 		if (dup2(outfile, STDOUT_FILENO) == -1)
