@@ -6,7 +6,7 @@
 /*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 15:59:04 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/20 17:30:21 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/22 12:05:24 by eslamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static int	close_all_pipes(t_pipex *struc)
 {
 	int	j;
+	int	test = -1;
 
 	j = 0;
 	while (j < struc->nb_pipe)
@@ -22,12 +23,13 @@ static int	close_all_pipes(t_pipex *struc)
 		if (close(struc->outin[j][0]) == -1)
 		{
 			struc->error = CLOSE_P0;
-			return (errors(CLOSE_P0, "0"), 1);
+			return (errors(CLOSE_P0, "0"), anihilation((char **) struc->outin), 1);
 		}
-		if (close(struc->outin[j][1]) == -1)
+		close(struc->outin[j][1]);
+		if (test == -1)
 		{
 			struc->error = CLOSE_P1;
-			return (errors(CLOSE_P1, "0"), 1);
+			return (errors(CLOSE_P1, "0"), anihilation((char **) struc->outin), 1);
 		}
 		j++;
 	}
@@ -50,9 +52,9 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		else
 			infile = open(av[1], O_RDONLY);
 		if (infile == -1)
-			return (1);
+			return (errors(OPEN, NULL), 1);
 		if (dup2(infile, STDIN_FILENO) == -1) // Récup donnée
-			return (1);
+			return (errors(DUP, NULL), 1);
 		if (close(infile) == -1)
 			return (errors(CLOSE, NULL), 1);
 	}
@@ -82,15 +84,9 @@ static int	exec_child(t_pipex *pip, int ac, char **av, char **environ)
 		return (errors(SPLIT, NULL), 1);
 	cmd = cmd_build(splitted[0], environ);
 	if (cmd == NULL)
-	{
-		// anihilation((char **) pip->outin);
 		return (errors(CMD, splitted[0]), anihilation(splitted), 1);
-	}
 	if (close_all_pipes(pip) == 1)
-	{
-		// anihilation((char **) pip->outin);
 		return (free(cmd), anihilation(splitted), 2);
-	}
 	execve(cmd, splitted, environ);
 	errors(EXEC, "0");
 	return (free(cmd), anihilation(splitted), 2);
@@ -114,7 +110,7 @@ static int	prep_pipe(t_pipex *pip, int ac)
 		{
 			pip->nb_pipe = i;
 			ft_printf_fd(2, "Error : Problem with calloc function\n");
-			return (anihilation((char **) pip->outin), close_all_pipes(pip), 1);
+			return (close_all_pipes(pip), 1);
 		}
 		if (pipe(pip->outin[i]) == -1)
 		{
@@ -154,7 +150,7 @@ int	main(int ac, char **av, char *environ[])
 		if (prep_pipe(&struc, ac) == 1)
 			return (1);
 		struc.ind_child = -1;
-		while (struc.ind_child++ < struc.nb_proc)
+		while (++struc.ind_child < struc.nb_proc)
 		{
 			test = exec(&struc, ac, av, environ);
 			if (test == 2)
@@ -173,7 +169,6 @@ int	main(int ac, char **av, char *environ[])
 
 static int	end(t_pipex *struc)
 {
-	// anihilation((char **) struc->outin);
 	if (struc->here_doc == 1)
 		if (unlink(HERE_FILE) == -1)
 			errors_bonus(UNLINK);

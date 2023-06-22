@@ -7,3 +7,4 @@ pipex
 outfile
 *.a
 *.json
+vgcore*
