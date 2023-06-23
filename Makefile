@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+         #
+#    By: dbaule <dbaule@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/04 16:30:03 by eslamber          #+#    #+#              #
-#    Updated: 2023/06/22 19:18:19 by eslamber         ###   ########.fr        #
+#    Updated: 2023/06/23 20:52:47 by dbaule           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,8 @@ SRC_B := main_bonus_saved.c \
 		 cmd_build.c \
 		 prep_pipe.c \
 		 errors.c \
-		 errors_bonus.c
+		 errors_bonus.c \
+		 exec_bonus.c
 OBJ_B := $(SRC_B:%.c=.obj/%.o)
 
 #

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dbaule <dbaule@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/17 09:35:27 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/22 16:06:17 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/23 20:50:04 by dbaule           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,15 @@ typedef struct s_pipex {
 	int			nb_pipe;
 	int			nb_proc;
 	int			here_doc;
+
+    char		*str;
+    char		*buf;
+    int			lenght;
+
 	t_errors	error;
 }	t_pipex;
+
+int		exec(t_pipex *struc, int ac, char **av, char **environ);
 
 void	errors(t_errors error, char *cmd);
 

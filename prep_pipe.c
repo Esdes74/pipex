@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prep_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dbaule <dbaule@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/10 14:40:39 by marvin            #+#    #+#             */
-/*   Updated: 2023/06/22 19:18:05 by eslamber         ###   ########.fr       */
+/*   Updated: 2023/06/23 18:10:10 by dbaule           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void		check_here_doc(char **av, t_pipex *struc, int ac);
 static int		set_up_heredoc(char **av, t_pipex *struc);
+static int		writing_here_doc(t_pipex *pip, char **av);
 
 int	prep_pipe(t_pipex *pip, char **av, int ac)
 {
@@ -23,7 +24,7 @@ int	prep_pipe(t_pipex *pip, char **av, int ac)
 	check_here_doc(av, pip, ac);
 	if (pip->outin == NULL)
 		return (ft_printf_fd(2, "Error : Problem with calloc function\n"), 1);
-	while (i < pip->nb_pipe) // Création du tableau de pipe
+	while (i < pip->nb_pipe)
 	{
 		pip->outin[i] = (int *) ft_calloc(2, sizeof(int));
 		if (pip->outin[i] == NULL)
@@ -56,57 +57,46 @@ static void	check_here_doc(char **av, t_pipex *struc, int ac)
 	struc->outin = (int **) ft_calloc(struc->nb_pipe + 1, sizeof(int *));
 }
 
-static int	set_up_heredoc(char **av, t_pipex *struc)
+static int	set_up_heredoc(char **av, t_pipex *stru)
 {
-    // int	temp;
-    /* int savedStdout; */
-    char *str;
-    char *buf;
-    int lenght;
+	stru->str = ft_strdup("\0");
+	if (stru->str == 0)
+		return(close_all_pipes(stru), errors_bonus(STRDUP), 1);
+	stru->buf = ft_strdup("\0");
+	if (stru->buf == 0)
+		return(free(stru->str), close_all_pipes(stru), \
+		 errors_bonus(STRDUP), 1);
+	stru->lenght = 1;
+	if (writing_here_doc(stru, av) == 1)
+		return (1);
+	free(stru->str);
+	free(stru->buf);
+    return (0);
+}
 
-	str = ft_strdup("\0");
-	buf = ft_strdup("\0");
-	lenght = 1;
-    // temp = open(HERE_FILE, O_WRONLY | O_APPEND | O_CREAT, 0644); // O_APPEND permet de dire "met à la suite"
-    // if (temp == -1)
-	// 	errors_bonus(OPEN_HERE_DOC);
-    while (ft_strncmp(av[2], str, lenght) != 0)
+static	int writing_here_doc(t_pipex *pip, char **av)
+{
+	int	err;
+	
+	while (ft_strncmp(av[2], pip->str, pip->lenght) != 0)
     {
-		free(str);
-		if (buf != NULL && write(struc->outin[0][1], buf, ft_strlen(buf)) == -1)
-            return(close_all_pipes(struc), free(buf), errors_bonus(WRITE), 1);
-		if (buf != NULL)
-			free(buf);
-        /* savedStdout = dup(STDOUT_FILENO);                   // enregistre la vrai sortie strandard, parce qu'on va la modifier et faudra la remettre après */
-        /* if (savedStdout == -1) */
-        /*     errors(DUP, NULL); */
+		free(pip->str);
+		err = write(pip->outin[0][1], pip->buf, ft_strlen(pip->buf));
+		if (pip->buf != NULL && err == -1)
+            return(close_all_pipes(pip), free(pip->buf), \
+			 errors_bonus(WRITE), 1);
+		if (pip->buf != NULL)
+			free(pip->buf);
         if (write(STDOUT_FILENO, "> ", 2) == -1)
             errors_bonus(WRITE);
-        // if (set_up_dup_to_temporary(temp) == 1)
-        //     return(1);
-        buf = get_next_line(STDIN_FILENO);                  //récupère la phrase envoyer dans le STDIN
-        if (buf == NULL)
+        pip->buf = get_next_line(STDIN_FILENO);
+        if (pip->buf == NULL)
             errors_bonus(GNL);
-        lenght = ft_strlen(buf);
-        str = ft_strdup(buf);
-        if (str == NULL)
+        pip->lenght = ft_strlen(pip->buf);
+        pip->str = ft_strdup(pip->buf);
+        if (pip->str == NULL)
             errors_bonus(STRDUP);
-        /* if(dup2(savedStdout, STDOUT_FILENO) == -1)          //remet la sortie strandard pour afficher correctement le '>' */
-        /*     errors(DUP, NULL); */
-        /* if (close(STDOUT_FILENO) == -1)                       // on en a finis avec, ça recommencera avec le dup plus haut */
-        /*     errors(CLOSE, NULL); */
-		str[lenght - 1] = '\0';                             //pour vraiment bien comparé, parce que tu met entrer donc '\n' en plus alors que av[2] lui finis par '\0
-        /* if (ft_strncmp(av[2], str, lenght) == 0)            // ici il faut dup dans le premier pipe dcp. en 1/0 ou le récuéré plus tard et l'assimiler à infile */
-        /* { */
-        /*     free(buf); */
-        /*     free(str); */
-        /*     // if (close(temp) == -1) */
-        /*     //     errors(CLOSE, NULL); */
-        /*     return(0); */
-        /* } */
-        /* free(str); */
+		pip->str[pip->lenght - 1] = '\0';
     }
-	free(str);
-	free(buf);
-    return (0);
+	return (0);
 }
