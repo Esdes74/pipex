@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dbaule <dbaule@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 17:21:42 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/20 11:16:21 by eslamber         ###   ########.fr       */
+/*   Created: 2023/05/04 17:21:42 by dbaule            #+#    #+#             */
+/*   Updated: 2023/06/27 13:35:11 by dbaule           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	main(int ac, char **av, char *environ[])
 {
-	int		outin[2];
+	int	outin[2];
 
 	if (ac == 5 && environ != NULL)
 	{
@@ -25,8 +25,10 @@ int	main(int ac, char **av, char *environ[])
 		if (parent(outin, av, environ) == 1)
 			return (1);
 		close_pipe(outin);
-		wait(NULL);
-		wait(NULL);
+		if (wait(NULL) == -1)
+			return (errors(WAIT, NULL), 1);
+		if (wait(NULL) == -1)
+			return (errors(WAIT, NULL), 1);
 	}
 	else
 		errors(CONDITIONS, NULL);

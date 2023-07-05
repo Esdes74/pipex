@@ -3,40 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_build.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/17 09:13:17 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/20 11:23:31 by eslamber         ###   ########.fr       */
+/*   Created: 2023/06/17 09:13:17 by dbaule            #+#    #+#             */
+/*   Updated: 2023/07/05 18:14:34 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 static char	*search_command(char *str, char *new);
+static char	*check_slash(char *cmd, char *str);
 
 char	*cmd_build(char *str, char **env)
 {
-	char	*new;
 	char	*cmd;
 	size_t	i;
 
-	if (ft_in('/', str) == 1)
-		return (ft_strdup(str));
 	i = 0;
-	new = NULL;
+	cmd = NULL;
+	cmd = check_slash(cmd, str);
+	if (cmd == NULL && ft_in('/', str) == 1)
+		return (NULL);
+	if (cmd != NULL)
+		return (cmd);
 	while (env[i])
 	{
-		new = ft_strnstr(env[i], "PATH=", ft_strlen(env[i]));
-		if (new != NULL)
-			break ;
+		if (ft_strncmp(env[i], "PATH=", 5) == 0)
+			break;
 		i++;
 	}
-	if (new == NULL)
-		return (NULL);
-	new += ft_strlen("PATH=");
-	cmd = search_command(str, new);
+	if (!env[i])
+		return (errors(CMD, str), NULL);
+	cmd = ft_strdup(&env[i][5]);
+	if (!cmd)
+		return (perror("Error"), NULL);
+	cmd = search_command(str, cmd);
 	if (cmd == NULL)
-		return (NULL);
+		return (errors(CMD, str), NULL);
 	return (cmd);
 }
 
@@ -47,10 +51,11 @@ static char	*search_command(char *str, char *new)
 	int		i;
 
 	path = ft_split(new, ':');
+	free(new);
 	if (path == NULL)
-		return (NULL);
-	i = 0;
-	while (path[i])
+		return (perror("Error"), NULL);
+	i = -1;
+	while (path[++i])
 	{
 		new = ft_strjoin(path[i], "/");
 		if (new == NULL)
@@ -64,7 +69,20 @@ static char	*search_command(char *str, char *new)
 			return (anihilation(path), cmd);
 		free(cmd);
 		cmd = NULL;
-		i++;
 	}
 	return (anihilation(path), free(cmd), NULL);
+}
+
+static char	*check_slash(char *cmd, char *str)
+{
+	if (ft_in('/', str) == 1)
+	{
+		cmd = ft_strdup(str);
+		if (cmd == NULL)
+			return (perror("Error"), NULL);
+		if (access(cmd, F_OK | X_OK) == -1)
+			return (errors(CMD, str), free(cmd), NULL);
+		return (cmd);
+	}
+	return (cmd);
 }

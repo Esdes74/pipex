@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eslamber <eslamber@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/20 08:38:23 by eslamber          #+#    #+#             */
-/*   Updated: 2023/06/21 17:36:41 by eslamber         ###   ########.fr       */
+/*   Created: 2023/06/27 13:33:48 by dbaule            #+#    #+#             */
+/*   Updated: 2023/07/05 18:10:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,12 @@ static void	errors_bis(t_errors error);
 void	errors(t_errors error, char *cmd)
 {
 	if (error == PIPE)
-		ft_printf_fd(ERR, "Error : Probleme with pipe function.\n");
+		ft_printf_fd(ERR, "Error : Problem with pipe function.\n");
 	else if (error == CONDITIONS)
-		ft_printf_fd(ERR, "Error : You don't have enought parameters.\nOr the \
-environnement is NULL\n");
+		ft_printf_fd(ERR, "Error : you haven't set the right number of \
+parameters\nOr the environnement is NULL\n");
 	else if (error == FORK)
 		ft_printf_fd(ERR, "Error : Problem with fork function\n");
-	else if (error == OPEN)
-		ft_printf_fd(ERR, "Error : Problem with open function\n");
 	else if (error == DUP)
 		ft_printf_fd(ERR, "Error : Problem with dup function\n");
 	else if (error == CLOSE)
@@ -33,7 +31,7 @@ environnement is NULL\n");
 	else if (error == SPLIT)
 		ft_printf_fd(ERR, "Error : Problem with split function\n");
 	else if (error == CMD && cmd != NULL)
-		ft_printf_fd(ERR, "zsh: command not found: %s\n", cmd);
+		ft_printf_fd(ERR, "Error : command not found: %s\n", cmd);
 	else if (error == EXEC)
 		ft_printf_fd(ERR, "Error : Problem with execve function\n");
 	else if (error == CLOSE_P0)
@@ -49,4 +47,6 @@ static void	errors_bis(t_errors error)
 {
 	if (error == JOIN)
 		ft_printf_fd(ERR, "Error : Problem with ft_strjoin function\n");
+	if (error == WAIT)
+		ft_printf_fd(ERR, "Error : Problem with wait function.\n");
 }
